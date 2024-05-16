@@ -121,39 +121,58 @@ def result():
     user_name = user_data.name
     receiver_email = user_data.email
 
-    # Prepare email content
     subject = "Detection Results"
     message = "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'></head><body><h1 style='text-align: center;'>Detection Results</h1><h2>Damage Assessment</h2><hr><p><strong>Vegetation Damage:</strong><span> "+ str(result_detection["vegetation_damage"]) +"</span></p><p><strong>Water Damage or Mold:</strong><span> "+ str(result_detection["water_damage_or_mold"]) +"</span></p><p><strong>Unfinished Paint:</strong><span> "+ str(result_detection["unfinished_paint"]) +"</span></p><p><strong>Crack:</strong><span> "+ str(result_detection["crack"]) +"</span></p><p><strong>Sagging Roof:</strong><span> "+ str(result_detection["sagging_roof"]) +"</span></p><br><h2>Church Details</h2><hr><p><strong>Church Name:</strong><span> "+ church_name +"</span></p><p><strong>Location:</strong><span> "+ location +"</span></p><p><strong>Building Capacity:</strong><span> "+ building_capacity +"</span></p><p><strong>Date Built:</strong><span> "+ date_built +"</span></p><p><strong>Short Description:</strong><span> "+ short_description +"</span></p></body></html>"
 
-    # Generate PDF report
     if result_detection:
         pdf_filename = "detection_report.pdf"
         c = canvas.Canvas(pdf_filename, pagesize=letter)
-        c.drawString(100, 750, "Detection Results")
-        c.drawString(100, 730, "Damage Assessment")
-        c.drawString(100, 710, "Vegetation Damage: " + str(result_detection["vegetation_damage"]))
-        c.drawString(100, 690, "Water Damage or Mold: " + str(result_detection["water_damage_or_mold"]))
-        c.drawString(100, 670, "Unfinished Paint: " + str(result_detection["unfinished_paint"]))
-        c.drawString(100, 650, "Crack: " + str(result_detection["crack"]))
-        c.drawString(100, 630, "Sagging Roof: " + str(result_detection["sagging_roof"]))
-        c.drawString(100, 610, "Church Details")
-        c.drawString(100, 590, "Church Name: " + church_name)
-        c.drawString(100, 570, "Location: " + location)
-        c.drawString(100, 550, "Building Capacity: " + building_capacity)
-        c.drawString(100, 530, "Date Built: " + date_built)
-        c.drawString(100, 510, "Short Description: " + short_description)
 
-        # Add the uploaded image to the PDF
+        c.setFont("Helvetica-Bold", 16)
+
+        title = "Visual Inspection Assessment"
+        title_width = c.stringWidth(title)
+        center_x = (letter[0] - title_width) / 2
+        c.drawString(center_x, 750, title)
+
+        c.setFont("Helvetica", 12)
+
+        c.setFont("Helvetica-Bold", 12)
+        Damage_title = "Church Details"
+        Dtitle_width = c.stringWidth(Damage_title)
+        center_x = (letter[0] - Dtitle_width) / 2
+        c.drawString(100,730, Damage_title)
+        c.setFont("Helvetica", 12)
+        c.drawString(100, 710, "Church Name: " + church_name)
+        c.drawString(100, 690, "Location: " + location)
+        c.drawString(100, 670, "Building Capacity: " + building_capacity)
+        c.drawString(100, 650, "Date Built: " + date_built)
+        
+        c.line(100, 620, 500, 620)
+
         if os.path.exists(image_savepath):
-            c.drawImage(image_savepath, 100, 450, width=300, height=200)
+            c.drawImage(image_savepath, 100, 410, width=300, height=200)
+
+        c.line(100, 390, 500, 390)
+
+        c.setFont("Helvetica-Bold", 12)
+        Damage_title = "Damage Assessment"
+        Dtitle_width = c.stringWidth(Damage_title)
+        center_x = (letter[0] - Dtitle_width) / 2
+        c.drawString(100,370, Damage_title)
+        c.setFont("Helvetica", 12)
+        c.drawString(100, 350, "Vegetation Damage: " + str(result_detection["vegetation_damage"]))
+        c.drawString(100, 330, "Water Damage or Mold: " + str(result_detection["water_damage_or_mold"]))
+        c.drawString(100, 310, "Unfinished Paint: " + str(result_detection["unfinished_paint"]))
+        c.drawString(100, 290, "Crack: " + str(result_detection["crack"]))
+        c.drawString(100, 270, "Sagging Roof: " + str(result_detection["sagging_roof"]))
 
         c.save()
 
-        # Sending Email with PDF Attachment
-        attachment_path = pdf_filename  # Assuming the PDF is saved in the same directory
+
+        attachment_path = pdf_filename 
         message = "Please find the detection report attached."
         if send_email(receiver_email, subject, message, attachment_path=attachment_path):
-            # Update image hash and save data
             if not image_hasher.verify(image_hash, hash_dict):
                 image_hashes = image_hasher.hash_images_in_folder('static/uploads')
                 image_hasher.save(image_hashes, json_path)
@@ -572,10 +591,10 @@ def perform_detection(image_path, page, user_id):
                     sagging_roof += 1
             
             label = '%s' % (object_name)
-            labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
-            label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
-            cv2.rectangle(image, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
-            cv2.putText(image, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
+            labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)
+            label_ymin = max(ymin, labelSize[1] + 10)
+            cv2.rectangle(image, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED)
+            cv2.putText(image, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) 
 
     if page == "image_detection":
         base_dir = "static/uploads"
