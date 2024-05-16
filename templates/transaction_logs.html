@@ -13,11 +13,11 @@
         </div>
     </section>
     <!-- End Breadcrumbs Section -->
-
     <section class="inner-page py-4">
-        <div class="container">
+        <div class="container">    
             <form action="/transaction_logs" method="get">
-                User Filter: <select name="user_filter">
+                <label for="user_filter">User Filter:</label>
+                <select name="user_filter" id="user_filter">
                     <option value="">Select User</option>
                     <option value="">All Users</option>
                     {% for name in unique_names %}

@@ -83,8 +83,15 @@ def transaction_logs():
     # Define the notification variable
     notification = {}  # Or replace this with actual notification data
 
-    return render_template('transaction_logs.html', data=transaction_logs, unique_names=unique_names, notification=notification)
+    return render_template('transaction_logs.html', data=transaction_logs, unique_names=unique_names,  notification=None)
 
+
+def get_unique_user_names():
+    with db.session.no_autoflush:
+        result = db.session.query(Log_Transactons.name.distinct()).all()
+    unique_names = [name for (name,) in result]
+    
+    return unique_names
 
 @app.route('/result', methods=['POST'])
 def result():
@@ -754,12 +761,5 @@ def send_email(receiver_email, subject, message, attachment_path=None, sender_na
     except Exception as e:
         return False
     
-def get_unique_user_names():
-    with db.session.no_autoflush:
-        result = db.session.query(Log_Transactons.name.distinct()).all()
-    unique_names = [name for (name,) in result]
-    
-    return unique_names
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000, debug=True)
