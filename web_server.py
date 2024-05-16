@@ -72,10 +72,19 @@ def detect():
 @app.route('/transaction_logs')
 def transaction_logs():
     db = Log_Transactons()
+    unique_names = get_unique_user_names()  # Fetch unique names
 
-    transaction_logs = db.select()
+    # Get the user filter from the request arguments
+    user_filter = request.args.get('user_filter')
 
-    return render_template('transaction_logs.html', data=transaction_logs, notification=None)
+    # Apply the user filter to your query
+    transaction_logs = db.select(user_filter=user_filter)
+
+    # Define the notification variable
+    notification = {}  # Or replace this with actual notification data
+
+    return render_template('transaction_logs.html', data=transaction_logs, unique_names=unique_names, notification=notification)
+
 
 @app.route('/result', methods=['POST'])
 def result():
@@ -744,6 +753,13 @@ def send_email(receiver_email, subject, message, attachment_path=None, sender_na
         return True
     except Exception as e:
         return False
+    
+def get_unique_user_names():
+    with db.session.no_autoflush:
+        result = db.session.query(Log_Transactons.name.distinct()).all()
+    unique_names = [name for (name,) in result]
+    
+    return unique_names
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000, debug=True)

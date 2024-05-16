@@ -16,6 +16,16 @@
 
     <section class="inner-page py-4">
         <div class="container">
+            <form action="/transaction_logs" method="get">
+                User Filter: <select name="user_filter">
+                    <option value="">Select User</option>
+                    <option value="">All Users</option>
+                    {% for name in unique_names %}
+                    <option value="{{ name }}">{{ name }}</option>
+                    {% endfor %}
+                </select>
+                <input type="submit" value="Filter">
+            </form>
             <table class="table">
                 <thead>
                     <tr>

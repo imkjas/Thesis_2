@@ -91,12 +91,16 @@ class Log_Transactons(db.Model):
     @classmethod
     def insert(cls, data):
         db.session.add(data)
-
         db.session.commit()
 
     @classmethod
-    def select(cls):
-        data = cls.query.order_by(cls.date_created.desc()).all()
+    def select(cls, user_filter=None):
+        query = cls.query.order_by(cls.date_created.desc())
+        
+        if user_filter:
+            query = query.filter(cls.name == user_filter)
+        
+        data = query.all()
         
         if not data:
             return False
