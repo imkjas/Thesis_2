@@ -11,6 +11,7 @@ from session import Session
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
+from sqlalchemy import or_
 
 import numpy as np
 import smtplib
@@ -71,19 +72,25 @@ def detect():
 
 @app.route('/transaction_logs')
 def transaction_logs():
+    # Initialize the database session
     db = Log_Transactons()
-    unique_names = get_unique_user_names()  # Fetch unique names
+
+    # Fetch unique names
+    unique_names = get_unique_user_names()
 
     # Get the user filter from the request arguments
     user_filter = request.args.get('user_filter')
 
-    # Apply the user filter to your query
-    transaction_logs = db.select(user_filter=user_filter)
+    # Get the action filter from the request arguments
+    action_filter = request.args.get('action_filter')
+
+    # Apply the user filter and action filter to your query
+    transaction_logs = db.select(user_filter=user_filter, action_filter=action_filter)
 
     # Define the notification variable
     notification = {}  # Or replace this with actual notification data
 
-    return render_template('transaction_logs.html', data=transaction_logs, unique_names=unique_names,  notification=None)
+    return render_template('transaction_logs.html', data=transaction_logs, unique_names=unique_names, notification=None)
 
 
 def get_unique_user_names():

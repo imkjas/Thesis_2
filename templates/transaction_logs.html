@@ -24,6 +24,13 @@
                     <option value="{{ name }}">{{ name }}</option>
                     {% endfor %}
                 </select>
+                <label for="action_filter">Action Filter:</label>
+                <select name="action_filter" id="action_filter">
+                    <option value="">Select Action</option>
+                    <option value="logged in">Logged In</option>
+                    <option value="logged out">Logged Out</option>
+                    <option value="archived">Archived</option>
+                </select>
                 <input type="submit" value="Filter">
             </form>
             <table class="table">

@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
 from datetime import datetime, timezone
 import bcrypt
 import pytz
@@ -94,17 +95,21 @@ class Log_Transactons(db.Model):
         db.session.commit()
 
     @classmethod
-    def select(cls, user_filter=None):
+    def select(cls, user_filter=None, action_filter=None):
         query = cls.query.order_by(cls.date_created.desc())
-        
+
         if user_filter:
             query = query.filter(cls.name == user_filter)
-        
+
+        if action_filter:
+            # Correctly using or_ to filter based on the log content
+            query = query.filter(cls.log.contains(action_filter))
+
         data = query.all()
-        
+
         if not data:
             return False
-        
+
         return data
 
 class Newsletter_List(db.Model):
