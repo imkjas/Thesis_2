@@ -1,0 +1,142 @@
+{% include 'includes/header.html' %}
+<main id="main">
+    <!-- ======= Breadcrumbs Section ======= -->
+    <section class="breadcrumbs">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Image Detection Result</h2>
+                <ol>
+                    <li><a href="/">Home</a></li>
+                    <li>Image Detection Result</li>
+                </ol>
+            </div>
+        </div>
+    </section>
+    <!-- End Breadcrumbs Section -->
+
+    <section class="inner-page py-4">
+        <div class="container">
+            <div class="row d-flex justify-content-center">
+                <div class="col-12 mb-3" id="div_image_result">
+                    <div id="result-image-container" class="position-relative">
+                        <img id="result-image" src="{{ url_for('static', filename='uploads/' + image_filename) }}"
+                            alt="Detected Image" class="img-thumbnail w-100 img-shadow clickable_image" role="button">
+                    </div>
+                </div>
+                <div class="col-12 mb-5">
+                    <h5>Damage Assessment</h5>
+                    <hr>
+                    {% if result["vegetation_damage"] > 0 or result["water_damage_or_mold"] > 0 or result["unfinished_paint"] > 0 or result["crack"] > 0 or result["sagging_roof"] > 0 %}
+                        {% if result["vegetation_damage"] > 0 %}
+                            <!-- Vegetation Damage -->
+                            <span class="d-block mb-1">
+                                <div class="d-flex align-items-center">
+                                    <strong class="me-2">Vegetation Damage:</strong>
+                                    {{ result["vegetation_damage"] }} count{% if result["vegetation_damage"] > 1 %}s{% endif %}
+                                </div>
+                            </span>
+                        {% endif %}
+                        {% if result["water_damage_or_mold"] > 0 %}
+                            <!-- Water Damage or Mold -->
+                            <span class="d-block mb-1">
+                                <div class="d-flex align-items-center">
+                                    <strong class="me-2">Water Damage or Mold:</strong>
+                                    {{ result["water_damage_or_mold"] }} count{% if result["water_damage_or_mold"] > 1 %}s{% endif %}
+                                </div>
+                            </span>
+                        {% endif %}
+                        {% if result["unfinished_paint"] > 0 %}
+                            <!-- Unfinished Paint -->
+                            <span class="d-block mb-1">
+                                <div class="d-flex align-items-center">
+                                    <strong class="me-2">Unfinished Paint:</strong>
+                                    {{ result["unfinished_paint"] }} count{% if result["unfinished_paint"] > 1 %}s{% endif %}
+                                </div>
+                            </span>
+                        {% endif %}
+                        {% if result["crack"] > 0 %}
+                            <!-- Crack -->
+                            <span class="d-block mb-1">
+                                <div class="d-flex align-items-center">
+                                    <strong class="me-2">Crack:</strong>
+                                    {{ result["crack"] }} count{% if result["crack"] > 1 %}s{% endif %}
+                                </div>
+                            </span>
+                        {% endif %}
+                        {% if result["sagging_roof"] > 0 %}
+                            <!-- Sagging Roof -->
+                            <span class="d-block mb-1">
+                                <div class="d-flex align-items-center">
+                                    <strong class="me-2">Sagging Roof:</strong>
+                                    {{ result["sagging_roof"] }} count{% if result["sagging_roof"] > 1 %}s{% endif %}
+                                </div>
+                            </span>
+                        {% endif %}
+                    {% else %}
+                        <h1 class="text-muted text-center">No Damage Detected</h1>
+                    {% endif %}
+
+                </div>
+                <div class="col-12 mb-3">
+                    <h5>Church Details</h5>
+                    <hr>
+                    <span class="d-block mb-1">
+                        <strong>Church Name:</strong> {{church_name}}
+                    </span>
+                    <span class="d-block mb-1">
+                        <strong>Location:</strong> {{location}}
+                    </span>
+                    <span class="d-block mb-1">
+                        <strong>Building Capacity:</strong> {{building_capacity}}
+                    </span>
+                    <span class="d-block mb-1">
+                        <strong>Date Built:</strong> {{date_built}}
+                    </span>
+                    <span class="d-block">
+                        <strong>Short Description:</strong> {{short_description}}
+                    </span>
+                </div>
+                <div class="col-12 mb-3">
+                    <a href="/detect" class="btn btn-primary mt-3 w-100">Detect Another Image</a>
+                    <!-- Button to open PDF preview modal -->
+                    <button type="button" class="btn btn-primary mt-3 w-100" onclick="openPdfPreview('{{ url_for('download_pdf', pdf_filename='detection_report.pdf') }}')">Preview PDF</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% include 'includes/footer.html' %}
+
+<!-- Modal for PDF Preview -->
+<div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pdfModalLabel">PDF Preview</h5>
+        <button type="button" class="close" aria-label="Close" onclick="closePdfModal()">
+            <span aria-hidden="true">&times;</span>
+        </button>       
+      </div>
+      <div class="modal-body">
+        <!-- Embedded PDF preview -->
+        <embed src="/preview_pdf/detection_report.pdf" width="100%" height="600px" type="application/pdf">
+      </div>
+      <div class="modal-footer">
+        <!-- Download button/link -->
+        <a id="downloadPdfButton" class="btn btn-primary" href="#" download>Download PDF</a>
+        <button type="button" class="btn btn-secondary" onclick="closePdfModal()">Close</button>    </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript function to open PDF preview modal -->
+<script>
+  function openPdfPreview(pdfUrl) {
+    $('#pdfPreview').attr('src', pdfUrl);
+    $('#downloadPdfButton').attr('href', pdfUrl);
+    $('#pdfModal').modal('show');
+  }
+  function closePdfModal() {
+    $('#pdfModal').modal('hide');
+  }
+</script>

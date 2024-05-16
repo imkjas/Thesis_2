@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection Results - PDF</title>
+    <style>
+        /* Define your CSS styles here */
+    </style>
+</head>
+<body>
+    <h1>Detection Results</h1>
+
+    <h2>Damage Assessment</h2>
+    <hr>
+    <!-- Insert damage assessment data here -->
+
+    <h2>Church Details</h2>
+    <hr>
+    <!-- Insert church details data here -->
+
+    <h2>Result Image</h2>
+    <!-- Insert result image here -->
+    <img src="{{ url_for('static', filename='uploads/' + image_filename) }}" alt="Detected Image" style="max-width: 100%; height: auto;">
+</body>
+</html>
